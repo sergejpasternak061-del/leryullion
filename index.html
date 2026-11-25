@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЛерЮллион — свечи и забота о питомцах</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #faf7f2;
+            color: #2e2b27;
+            line-height: 1.5;
+            padding: 1.5rem 1rem;
+            transition: background 0.5s ease;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ===== ДЕКОРАТИВНЫЙ ФОН (главная) ===== */
+        .bg-decor {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0.55;
+        }
+
+        .bg-decor .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: floatBlob 18s ease-in-out infinite alternate;
+        }
+
+        .bg-decor .blob-1 {
+            width: 480px; height: 480px;
+            background: rgba(185, 133, 92, 0.18);
+            top: -120px; left: -120px;
+        }
+
+        .bg-decor .blob-2 {
+            width: 520px; height: 520px;
+            background: rgba(126, 168, 138, 0.16);
+            bottom: -160px; right: -140px;
+            animation-delay: -6s;
+        }
+
+        .bg-decor .blob-3 {
+            width: 360px; height: 360px;
+            background: rgba(201, 168, 139, 0.14);
+            top: 40%; left: 55%;
+            animation-delay: -12s;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, -30px) scale(1.12); }
+        }
+
+        /* Тонкая сетка/текстура поверх */
+        .bg-decor::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(30, 27, 24, 0.035) 1px, transparent 1px);
+            background-size: 26px 26px;
+        }
+
+        /* ===== ТЕМА: НОВОГОДНЯЯ КОЛЛЕКЦИЯ ===== */
+        body.theme-newyear { background: #0f2a1f; position: relative; }
+
+        body.theme-newyear .bg-decor { opacity: 0.6; }
+
+        body.theme-newyear .bg-decor .blob-1 {
+            background: rgba(212, 175, 106, 0.22);
+        }
+        body.theme-newyear .bg-decor .blob-2 {
+            background: rgba(126, 168, 138, 0.28);
+        }
+        body.theme-newyear .bg-decor .blob-3 {
+            background: rgba(46, 93, 66, 0.35);
+        }
+
+        body.theme-newyear .bg-decor::after {
+            background-image: radial-gradient(rgba(245, 230, 208, 0.06) 1px, transparent 1px);
+        }
+
+        /* ===== ТЕМА: ШЕРСТЬЕ ===== */
+        body.theme-sherstie { background: #e8ede6; }
+
+        body.theme-sherstie .bg-decor { opacity: 0.7; }
+
+        body.theme-sherstie .bg-decor .blob-1 {
+            background: rgba(168, 200, 160, 0.4);
+        }
+        body.theme-sherstie .bg-decor .blob-2 {
+            background: rgba(201, 168, 139, 0.28);
+        }
+        body.theme-sherstie .bg-decor .blob-3 {
+            background: rgba(126, 168, 138, 0.3);
+        }
+
+        body.theme-sherstie .bg-decor::after {
+            background-image: radial-gradient(rgba(45, 62, 46, 0.05) 1px, transparent 1px);
+        }
+
+        .container { max-width: 1280px; margin: 0 auto; position: relative; z-index: 2; }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo { font-weight: 700; font-size: 1.8rem; letter-spacing: -0.02em; color: #1e1b18; }
+        .logo span { color: #b9855c; }
+
+        .header-right { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+
+        .market-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.45rem 1rem; border-radius: 60px; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+            background: #fff; color: #1e1b18; box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+        }
+        .market-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.08); }
+        .market-btn.ozon i { color: #005bff; }
+        .market-btn.wb i { color: #cb11ab; }
+
+        .rating-badge {
+            background: #fff; padding: 0.45rem 0.9rem; border-radius: 60px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02); font-size: 0.9rem; font-weight: 500;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .rating-badge i { color: #f5b342; }
+
+        /* ===== ГЛАВНЫЙ ЭКРАН ===== */
+        #mainScreen { display: block; }
+
+        .hero-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+
+        .hero-btn {
+            position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 16 / 8;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; cursor: pointer; transition: transform 0.25s ease, box-shadow 0.3s ease;
+            box-shadow: 0 16px 28px -14px rgba(0,0,0,0.25); border: none; font-family: inherit;
+            color: white; padding: 1.5rem;
+        }
+        .hero-btn:hover { transform: translateY(-4px); box-shadow: 0 24px 34px -14px rgba(0,0,0,0.35); }
+        .hero-btn--newyear { background: linear-gradient(135deg, #1b3a2b 0%, #2e5d42 40%, #7ea88a 100%); }
+        .hero-btn--sherstie { background: linear-gradient(135deg, #3c2e26 0%, #6b5240 40%, #c9a88b 100%); }
+
+        .hero-btn .hero-icon { font-size: 2.6rem; margin-bottom: 0.6rem; opacity: 0.95; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
+
+        .hero-btn-content h2 {
+            font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.3rem;
+            line-height: 1.2; text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .hero-btn-content p { font-size: 1.05rem; opacity: 0.95; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+
+        /* ===== ВНУТРЕННИЕ СТРАНИЦЫ ===== */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.6rem; background: #fff; color: #1e1b18;
+            border: 1px solid #e0d6cc; padding: 0.65rem 1.3rem; border-radius: 60px;
+            font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            margin-bottom: 1.8rem; font-family: inherit;
+        }
+        .back-btn:hover { background: #1e1b18; color: #fff; border-color: #1e1b18; transform: translateX(-3px); }
+        .back-btn i { font-size: 0.9rem; }
+
+        .section-header { display: flex; align-items: baseline; gap: 1rem; margin: 0 0 1.2rem; }
+        .section-header h2 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; }
+        .section-header .line { flex: 1; height: 2px; background: #e0d6cc; }
+
+        .intro-text {
+            background: #fff; border-radius: 24px; padding: 1.8rem 2rem; margin-bottom: 2rem;
+            box-shadow: 0 6px 16px -10px rgba(0,0,0,0.06); border: 1px solid #f0e8e1;
+            font-size: 1.02rem; color: #4b3f35; line-height: 1.7;
+        }
+        .intro-text p { margin-bottom: 0.8rem; }
+        .intro-text p:last-child { margin-bottom: 0; }
+        .intro-text strong { color: #2e2b27; }
+
+        /* Product grid */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
+
+        .product-card {
+            background: white; border-radius: 28px; padding: 1.2rem 1.2rem 1.5rem;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.08); transition: transform 0.2s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column; height: 100%; border: 1px solid rgba(255,255,255,0.5);
+        }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 20px 30px -12px rgba(0,0,0,0.15); }
+
+        .product-img {
+            width: 100%; aspect-ratio: 1 / 1; border-radius: 20px; overflow: hidden;
+            background: #f0ebe5; margin-bottom: 1rem; position: relative;
+        }
+        .product-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s ease; display: block; }
+        .product-card:hover .product-img img { transform: scale(1.06); }
+
+        .img-fallback {
+            position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 0.5rem; background: linear-gradient(145deg, #fdf9f5 0%, #f1e8df 100%);
+            color: #b9855c;
+        }
+        .img-fallback i { font-size: 2.8rem; opacity: 0.8; }
+        .img-fallback span { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #b09884; }
+
+        .badge-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.6rem; }
+        .badge {
+            font-size: 0.65rem; font-weight: 600; letter-spacing: 0.02em; padding: 0.3rem 0.8rem;
+            border-radius: 40px; background: #f3ede7; color: #5c4b3a; text-transform: uppercase; white-space: nowrap;
+        }
+        .badge.hit { background: #d9b382; color: #1e1b18; }
+        .badge.gift { background: #e8dad0; color: #4b3b2e; }
+
+        .product-title { font-weight: 700; font-size: 1.15rem; line-height: 1.3; margin-bottom: 0.4rem; }
+        .product-desc { font-size: 0.9rem; color: #6b5f55; margin-bottom: 1rem; flex-grow: 1; }
+        .product-desc strong { color: #2e2b27; font-weight: 600; }
+
+        .buy-buttons { display: flex; gap: 0.6rem; margin-top: auto; flex-wrap: wrap; }
+        .buy-btn {
+            flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+            padding: 0.6rem 0.8rem; border-radius: 40px; font-size: 0.8rem; font-weight: 600;
+            text-decoration: none; transition: all 0.2s; white-space: nowrap; min-width: 110px;
+        }
+        .buy-btn.ozon { background: #eef3ff; color: #005bff; border: 1px solid #d0ddff; }
+        .buy-btn.ozon:hover { background: #005bff; color: #fff; }
+        .buy-btn.wb { background: #fceef8; color: #cb11ab; border: 1px solid #f5d0ea; }
+        .buy-btn.wb:hover { background: #cb11ab; color: #fff; }
+        .buy-btn i { font-size: 0.85rem; }
+
+        .footer {
+            text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e0d6cc;
+            color: #8a7d71; font-size: 0.9rem; position: relative; z-index: 2;
+        }
+
+        /* ===== ТЕМА: НОВОГОДНЯЯ КОЛЛЕКЦИЯ ===== */
+        body.theme-newyear .container { background: rgba(15,42,31,0.35); backdrop-filter: blur(1px); border-radius: 40px; padding: 1.5rem; }
+        body.theme-newyear .logo { color: #f5e6d0; }
+        body.theme-newyear .logo span { color: #d4af6a; }
+        body.theme-newyear .back-btn { background: rgba(255,255,255,0.1); color: #f5e6d0; border-color: rgba(212,175,106,0.4); }
+        body.theme-newyear .back-btn:hover { background: #d4af6a; color: #0f2a1f; border-color: #d4af6a; }
+        body.theme-newyear .section-header h2 { color: #f5e6d0; }
+        body.theme-newyear .section-header .line { background: #d4af6a; opacity: 0.4; }
+        body.theme-newyear .intro-text { background: rgba(20,45,32,0.85); border-color: rgba(212,175,106,0.3); color: #d8cfc0; backdrop-filter: blur(10px); }
+        body.theme-newyear .intro-text strong { color: #f5e6d0; }
+        body.theme-newyear .product-card { background: #fdf9f2; border-color: rgba(212,175,106,0.25); }
+        body.theme-newyear .product-title { color: #1e2e24; }
+        body.theme-newyear .product-desc { color: #5a5348; }
+        body.theme-newyear .rating-badge,
+        body.theme-newyear .market-btn { background: rgba(255,255,255,0.12); color: #f5e6d0; border: 1px solid rgba(212,175,106,0.2); }
+        body.theme-newyear .market-btn.ozon i { color: #6fa8ff; }
+        body.theme-newyear .market-btn.wb i { color: #e87ad0; }
+        body.theme-newyear .footer { color: #9aab9e; border-top-color: rgba(212,175,106,0.2); }
+
+        /* Снежинки */
+        .snow-container { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; display: none; }
+        body.theme-newyear .snow-container { display: block; }
+        .snowflake {
+            position: absolute; top: -10%; color: rgba(255,255,255,0.5); font-size: 0.8rem;
+            animation: fall linear infinite; user-select: none;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0.1; }
+        }
+
+        /* ===== ТЕМА: ШЕРСТЬЕ ===== */
+        body.theme-sherstie .container { background: rgba(232,237,230,0.6); border-radius: 40px; padding: 1.5rem; }
+        body.theme-sherstie .logo { color: #2d3e2e; }
+        body.theme-sherstie .logo span { color: #7a9e7e; }
+        body.theme-sherstie .back-btn { background: #fdfcf9; color: #3a4a3a; border-color: #c8d6c4; }
+        body.theme-sherstie .back-btn:hover { background: #7a9e7e; color: #fff; border-color: #7a9e7e; }
+        body.theme-sherstie .section-header h2 { color: #2d3e2e; }
+        body.theme-sherstie .section-header .line { background: #b8c9b2; }
+        body.theme-sherstie .intro-text { background: rgba(253,252,249,0.9); border-color: #d4e0d0; color: #4a5a4a; backdrop-filter: blur(6px); }
+        body.theme-sherstie .intro-text strong { color: #2d3e2e; }
+        body.theme-sherstie .product-card { background: #fdfcf9; border-color: #e2ebe0; box-shadow: 0 8px 24px -12px rgba(90,110,90,0.12); }
+        body.theme-sherstie .product-title { color: #2d3e2e; }
+        body.theme-sherstie .product-desc { color: #5e6e5e; }
+        body.theme-sherstie .rating-badge,
+        body.theme-sherstie .market-btn { background: #fdfcf9; color: #3a4a3a; border: 1px solid #dce6d8; }
+        body.theme-sherstie .market-btn.ozon i { color: #005bff; }
+        body.theme-sherstie .market-btn.wb i { color: #cb11ab; }
+        body.theme-sherstie .badge { background: #e8f0e4; color: #4a6a4a; }
+        body.theme-sherstie .badge.hit { background: #a8c8a0; color: #1e2e1e; }
+        body.theme-sherstie .footer { color: #7a8e7a; border-top-color: #d0dccb; }
+
+        @media (max-width: 900px) {
+            .hero-buttons { grid-template-columns: 1fr; }
+            .hero-btn-content h2 { font-size: 1.6rem; }
+            .section-header h2 { font-size: 1.6rem; }
+            .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+            body.theme-newyear .container, body.theme-sherstie .container { padding: 1rem; }
+        }
+
+        @media (max-width: 500px) {
+            body { padding: 1rem 0.8rem; }
+            .product-grid { grid-template-columns: 1fr; }
+            .hero-btn-content h2 { font-size: 1.4rem; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .header-right { width: 100%; justify-content: flex-start; }
+            .buy-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Декоративный фон (мягкие «пятна» + сетка) -->
+    <div class="bg-decor" aria-hidden="true">
+        <div class="bg-blob blob-1"></div>
+        <div class="bg-blob blob-2"></div>
+        <div class="bg-blob blob-3"></div>
+    </div>
+
+    <!-- Снежинки (только для новогодней темы) -->
+    <div class="snow-container" id="snowContainer"></div>
+
+    <div class="container">
+        <!-- ===== ШАПКА ===== -->
+        <header class="header">
+            <div class="logo">Лер<span>Юллион</span></div>
+            <div class="header-right">
+                <a href="https://ozon.ru" target="_blank" rel="noopener" class="market-btn ozon">
+                    <i class="fas fa-shopping-bag"></i> Ozon
+                </a>
+                <a href="https://wildberries.ru" target="_blank" rel="noopener" class="market-btn wb">
+                    <i class="fas fa-shopping-bag"></i> Wildberries
+                </a>
+                <div class="rating-badge"><i class="fas fa-star"></i> 4.9</div>
+            </div>
+        </header>
+
+        <!-- ===== ГЛАВНЫЙ ЭКРАН ===== -->
+        <div id="mainScreen">
+            <div class="hero-buttons">
+                <button class="hero-btn hero-btn--newyear" onclick="showPage('pageNewYear')">
+                    <i class="fas fa-tree hero-icon"></i>
+                    <div class="hero-btn-content">
+                        <h2>Новогодняя коллекция</h2>
+                        <p>Свечи ручной работы · уют и волшебство</p>
+                    </div>
+                </button>
+                <button class="hero-btn hero-btn--sherstie" onclick="showPage('pageSherstie')">
+                    <i class="fas fa-paw hero-icon"></i>
+                    <div class="hero-btn-content">
+                        <h2>Бренд ШЕРСТЬЕ</h2>
+                        <p>Гипоаллергенный уход для питомцев</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ===== СТРАНИЦА: НОВОГОДНЯЯ КОЛЛЕКЦИЯ ===== -->
+        <!-- ============================================================ -->
+        <div id="pageNewYear" class="page">
+            <button class="back-btn" onclick="showMain()">
+                <i class="fas fa-arrow-left"></i> Вернуться в главное меню
+            </button>
+
+            <div class="section-header">
+                <h2>Новогодняя коллекция</h2>
+                <div class="line"></div>
+            </div>
+
+            <div class="intro-text">
+                <p><strong>Создайте зимнюю сказку дома.</strong> Каждая свеча и игрушка из нашей новогодней коллекции создана вручную с любовью к деталям. Мы используем только натуральный воск, хлопковые фитили и безопасные красители — чтобы ваш праздник был не только красивым, но и безопасным.</p>
+                <p>Свечи горят ровно, не коптят и наполняют дом тёплым ненавязчивым ароматом. Вязаные игрушки станут уютным декором для ёлки и отличным подарком для близких. <strong>Готовые идеи подарков</strong> — для коллег, семьи, детей и всех, кто ценит ручную работу.</p>
+            </div>
+
+            <div class="product-grid">
+                <!-- ny1 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&q=80&fit=crop" alt="Свеча Пряничный человечек"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-cookie-bite"></i><span>Свеча</span></div>
+                    </div>
+                    <div class="badge-row">
+                        <span class="badge hit">Хит продаж</span>
+                        <span class="badge gift">Открытка в подарок</span>
+                    </div>
+                    <div class="product-title">Свеча «Пряничный человечек»</div>
+                    <div class="product-desc">Ароматическая фигурная свеча с нотами корицы и имбирного печенья. Натуральный воск, ровное горение без копоти. Создаёт уют и праздничное настроение. Готовый подарок коллегам или украшение стола.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- ny2 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&q=80&fit=crop&sat=-30" alt="Свеча Новогодняя варежка"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-mitten"></i><span>Свеча</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Ручная работа</span></div>
+                    <div class="product-title">Свеча «Новогодняя варежка»</div>
+                    <div class="product-desc">Белая фактурная свеча с узором зимней вязки. Мягкий аромат хвои и мандарина. Натуральный воск, безопасный фитиль. Отличный наполнитель для прозрачных шаров или самостоятельный декор.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- ny3 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&q=80&fit=crop&hue=40" alt="Свеча Елочка с открыткой"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-tree"></i><span>Свеча</span></div>
+                    </div>
+                    <div class="badge-row">
+                        <span class="badge hit">Хит продаж</span>
+                        <span class="badge gift">Ручная работа</span>
+                    </div>
+                    <div class="product-title">Свеча «Елочка с открыткой»</div>
+                    <div class="product-desc">Красная праздничная свеча в подарочном оформлении + дизайнерская открытка внутри. Праздничный аромат еловых веток и ванили. Горит ровно, не коптит. Идеальна как подарок учителю или коллеге.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- ny4 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&q=80&fit=crop&hue=200" alt="Свеча Снежинка с колокольчиком"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-snowflake"></i><span>Свеча</span></div>
+                    </div>
+                    <div class="badge-row">
+                        <span class="badge">Ручная работа</span>
+                        <span class="badge gift">Открытка в подарок</span>
+                    </div>
+                    <div class="product-title">Свеча «Снежинка с колокольчиком»</div>
+                    <div class="product-desc">Нежная молочная свеча для праздничного стола. Натуральный соевый воск, приятный аромат свежести и цитрусов. Дополнит праздничную композицию, подойдёт для украшения стола. Безопасный состав.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- ny5 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=800&q=80&fit=crop" alt="Набор прозрачных елочных шаров"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-circle-notch"></i><span>Шары</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge hit">Хит продаж</span></div>
+                    <div class="product-title">Набор прозрачных елочных шаров (6 шт.)</div>
+                    <div class="product-desc">Наполняемые шары «Алкошарики» для оригинального украшения ёлки или подарка. Прочные, с удобной защёлкой. Создайте уникальный подарок своими руками — красиво и продающе.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- ny6 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1543589077-47d81606c1bf?w=800&q=80&fit=crop" alt="Вязаная елочная игрушка Дед Мороз"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-user-tie"></i><span>Игрушка</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Ручная работа</span></div>
+                    <div class="product-title">Вязаная игрушка «Дед Мороз»</div>
+                    <div class="product-desc">Уютное текстильное украшение ручной работы для ёлки. Мягкая, безопасная для детей и питомцев. Создаёт тёплую семейную атмосферу. Отличный подарок ценителям hand-made.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- ny7 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1543589077-47d81606c1bf?w=800&q=80&fit=crop&sat=-40" alt="Вязаная елочная игрушка Снеговик"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-snowman"></i><span>Игрушка</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Ручная работа</span></div>
+                    <div class="product-title">Вязаная игрушка «Снеговик»</div>
+                    <div class="product-desc">Мягкая небьющаяся игрушка — идеально для домов с детьми и питомцами. Тёплый зимний декор для ёлки или интерьера. Связана вручную из безопасных материалов. Праздничное настроение гарантировано.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- ny8 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1543589077-47d81606c1bf?w=800&q=80&fit=crop&hue=30" alt="Вязаная елочная игрушка Олененок"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-deer"></i><span>Игрушка</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Ручная работа</span></div>
+                    <div class="product-title">Вязаная игрушка «Олененок»</div>
+                    <div class="product-desc">Праздничный декор для тёплой семейной атмосферы. Связан вручную, мягкий и безопасный. Отлично смотрится на ёлке и в детской комнате. Создаёт новогоднее настроение и уют.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ===== СТРАНИЦА: БРЕНД ШЕРСТЬЕ ===== -->
+        <!-- ============================================================ -->
+        <div id="pageSherstie" class="page">
+            <button class="back-btn" onclick="showMain()">
+                <i class="fas fa-arrow-left"></i> Вернуться в главное меню
+            </button>
+
+            <div class="section-header">
+                <h2>Бренд ШЕРСТЬЕ</h2>
+                <div class="line"></div>
+            </div>
+
+            <div class="intro-text">
+                <p><strong>Забота, которая чувствуется.</strong> Обычные шампуни часто содержат агрессивные сульфаты и резкие отдушки, которые сушат кожу и вызывают раздражение у питомцев. Мы создали <strong>ШЕРСТЬЕ</strong> — гипоаллергенную формулу на мягких ПАВ, без резких запахов.</p>
+                <p>Наш pH-баланс адаптирован для чувствительной кожи собак и кошек. Формула не сушит кожу, подходит для частого применения, облегчает расчёсывание и делает шерсть мягкой и послушной. Безопасно для чувствительного обоняния животных — лёгкие ненавязчивые ароматы не раздражают.</p>
+            </div>
+
+            <div class="product-grid">
+                <!-- pet1 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80&fit=crop" alt="Гипоаллергенный шампунь для собак"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-pump-soap"></i><span>Шампунь</span></div>
+                    </div>
+                    <div class="badge-row">
+                        <span class="badge hit">Хит продаж</span>
+                        <span class="badge">250 мл</span>
+                    </div>
+                    <div class="product-title">Гипоаллергенный шампунь для собак (250 мл)</div>
+                    <div class="product-desc">Бережное очищение для чувствительной кожи. Мягкие ПАВ, без сульфатов и парабенов. Подходит для щенков с 2 месяцев и кошек. Не сушит кожу, облегчает расчёсывание. Лёгкий ненавязчивый аромат.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- pet2 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80&fit=crop&sat=-20" alt="Шампунь-уход для блеска и мягкости шерсти"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-sparkles"></i><span>Шампунь</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Уход</span></div>
+                    <div class="product-title">Шампунь-уход для блеска и мягкости шерсти</div>
+                    <div class="product-desc">Глубокое питание, облегчает вычёсывание. Формула с натуральными маслами укрепляет шерсть и придаёт здоровый блеск. Подходит для всех типов шерсти. Регулярное применение делает шерсть мягкой и послушной.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- pet3 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80&fit=crop&hue=120" alt="Парфюм для животных Нежность и чистота"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-spray-can-sparkles"></i><span>Парфюм</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Новинка</span></div>
+                    <div class="product-title">Парфюм «Нежность и чистота»</div>
+                    <div class="product-desc">Деликатный аромат без спирта, устраняет запах между купаниями. Лёгкий ненавязчивый запах свежести. Не раздражает кожу и обоняние питомца. Подходит для щенков и кошек. Распылять с расстояния 20 см.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- pet4 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80&fit=crop&hue=300" alt="Парфюм для животных Ягодный шлейф"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-apple-alt"></i><span>Парфюм</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Новинка</span></div>
+                    <div class="product-title">Парфюм «Ягодный шлейф»</div>
+                    <div class="product-desc">Свежий стойкий аромат для прогулок и выставок. Ноты спелых ягод создают ощущение чистоты и свежести. Без спирта, безопасно для кожи. Устраняет неприятные запахи. Подходит для всех пород.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- pet5 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80&fit=crop&hue=60" alt="Бальзам-кондиционер для легкого расчесывания"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-comb"></i><span>Бальзам</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Уход</span></div>
+                    <div class="product-title">Бальзам-кондиционер / Спрей для расчёсывания</div>
+                    <div class="product-desc">Против спутывания шерсти и статики. Облегчает расчёсывание, делает шерсть гладкой и послушной. Подходит для длинношёрстных пород. Натуральные компоненты питают и защищают. Применять после купания или между.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+
+                <!-- pet6 -->
+                <div class="product-card">
+                    <div class="product-img">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80&fit=crop&hue=180" alt="Защитный воск для лап и носа"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.img-fallback').style.display='flex';">
+                        <div class="img-fallback" style="display:none;"><i class="fas fa-paw"></i><span>Воск</span></div>
+                    </div>
+                    <div class="badge-row"><span class="badge">Защита</span></div>
+                    <div class="product-title">Защитный воск для лап и носа</div>
+                    <div class="product-desc">Защита от зимних реагентов, соли и мороза. Натуральный воск создаёт барьерную плёнку, предотвращает трещины и сухость. Подходит для собак и кошек. Наносить тонким слоем перед прогулкой. Безопасно при облизывании.</div>
+                    <div class="buy-buttons">
+                        <a href="https://ozon.ru" target="_blank" rel="noopener" class="buy-btn ozon"><i class="fas fa-shopping-bag"></i> Ozon</a>
+                        <a href="https://wildberries.ru" target="_blank" rel="noopener" class="buy-btn wb"><i class="fas fa-shopping-bag"></i> WB</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© ЛерЮллион, 2025. Свечи ручной работы и забота о питомцах.</p>
+        </footer>
+    </div>
+
+    <script>
+        function createSnowflakes() {
+            const container = document.getElementById('snowContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 0; i < 40; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.innerHTML = '❄';
+                flake.style.left = Math.random() * 100 + '%';
+                flake.style.animationDuration = (Math.random() * 6 + 6) + 's';
+                flake.style.animationDelay = Math.random() * 8 + 's';
+                flake.style.fontSize = (Math.random() * 0.6 + 0.4) + 'rem';
+                flake.style.opacity = Math.random() * 0.5 + 0.2;
+                container.appendChild(flake);
+            }
+        }
+
+        function showPage(pageId) {
+            document.body.classList.remove('theme-newyear', 'theme-sherstie');
+            document.getElementById('mainScreen').style.display = 'none';
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            if (target) target.classList.add('active');
+            if (pageId === 'pageNewYear') {
+                document.body.classList.add('theme-newyear');
+                createSnowflakes();
+            } else if (pageId === 'pageSherstie') {
+                document.body.classList.add('theme-sherstie');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showMain() {
+            document.body.classList.remove('theme-newyear', 'theme-sherstie');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('mainScreen').style.display = 'block';
+            const snowContainer = document.getElementById('snowContainer');
+            if (snowContainer) snowContainer.innerHTML = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
